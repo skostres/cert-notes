@@ -1,0 +1,78 @@
+EC2 Instance Types
+- On Demand {Workload schedules unpredictable}
+- Reserved {No upfront, partial upfront, full upfront}
+    Reserved Instance: Long workloads
+    Convertable reserved instances: Long workloads with flexible instances
+    Scheduled reserved instances: Every Thursday 3 - 6pm.
+- Spot Instance {Can be reclaimed anytime by AWS}
+- Dedicated Hosts {For regulatory, BYOL scenarios}
+
+
+https://ec2instances.info
+
+R: apps with high RAM usage
+C: High compute
+M: Balanced - general web app workloads
+I: Good local I/O - databases
+G: applications with GPU processing needs
+
+
+T2 / T3: Burstable workloads
+T2 / T3: Unlimited burst
+
+
+AMI: - Amazon Machine Image
+- AMIs are stored in S3
+- To create image, go to EC2 Instances -> right click instance -> Create Image.
+- Images will exist under the EC2 -> Images -> AMI
+- need to copy the image to other regions to make it available for instance creation in that region.
+- Cross Account AMI Copy:
+    Can share between accounts, but need to provide permissions to EBS snapshot or S3 bucket 
+    Sharing the AMI does not change ownership of the AMI.
+    The party that receives access can go and provision their own instances and create their own AMIs
+    Can't copy an encrypted AMI. If the keys were shared, you can copy and re-encrypt with your own
+    Can't copy an AMI with a billingProduct code that was shared with you from another account. Such as Windows / Marketplace AMIs.
+    Must first deploy the AMI, then create an image from the instance.
+- To share access, right click the image, and then enter the AWS Account Number to share with.
+
+
+EC2 Placement groups:
+- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
+- Sometimes you want control over the EC2 Instance placement strategy
+- When creating a placement group, these strategies are available:
+    1. Cluster - Places instances into a low latency group in a single AZ
+        Pro: Great network access between instances
+        Con: if rack fails, all instances impacted
+        uses: Big data jobs, ultra low latency jobs
+    2. Spread - Places instances across different physical hardware. (7 instances per group per AZ)
+        limit: Max of seven instances per AZ. Does not support Dedicated instance types
+        uses: critical apps
+        pro: Span across AZ, reduced risk to simultaneous failure
+        con: Limited to 7 instances per AZ per placement
+    3. Partition - Places each partition into isolated hardware. Each partition has independent network and power source. A partition has x number of instances
+        limit: Dedicated Instances can have max two partitions
+        uses: Hadoop / Cassandra, kafka
+        pro: Up to 7 partitions per AZ
+        con: A failure can impact many EC2 instances, but not other partitions
+
+
+Elastic Network Interface (ENI)
+- https://aws.amazon.com/blogs/aws/new-elastic-network-interfaces-in-the-virtual-private-cloud/
+- Logical component in a VPC that represents a virtual network card
+- The ENI can have many attributes:
+    Primary private IPv4, one or more secondary
+    One elastic IP (IPv4) per private IPv4
+    One public IPv4
+    One or more security groups
+    A MAC address
+You can create ENI independently and attach them on the fly on EC2 Instances for failover.
+Bound to a specific AZ
+
+
+EC2 Hibernate:
+- RAM state is written to EBS root volume
+- Use cases long running processing
+- Services that take a long time to initialize
+- Available for On demand / reserve instances
+- Cannot hibernate more than 60 days
+- Ram size < 150 GB

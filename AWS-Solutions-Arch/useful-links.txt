@@ -1,0 +1,10 @@
+Udemy course:
+https://www.udemy.com/course/aws-certified-solutions-architect-associate-saa-c02
+
+
+Amazon Certification Prep guide:
+https://aws.amazon.com/certification/certification-prep/
+
+
+EC2 instance information
+https://ec2instances.info
