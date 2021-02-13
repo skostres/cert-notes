@@ -1,0 +1,70 @@
+Vertical vs Horizontal scalability
+1. Vertical: Increasing the size of the resources of the instance. Hardware limits / cost.
+2. Horizontal: Increasing the number of instances for the application
+
+
+Horizontal implies distributed systems
+
+High availability
+- Running in at least two data centers
+- Ability to survive data center loss
+
+AWS Horizontal Scaling:
+- auto scaling groups
+- Load Balancer
+
+High Availability:
+- Auto scaling group with multi AZ 
+- Load balancer multi AZ
+
+
+Load Balancer types:
+- Classic Load Balancer: {HTTP, HTTPS, TCP}
+- Application Load Balancer: v2 {HTTP, HTTPS, WebSocket}
+- Network Load Balancer: v2 {TCP, TLS - secure TCP, UDP}
+
+You can setup internal (internal facing) or external (internet facing) ELBs
+
+LBs can scale but not instantaneously - contact AWS for a warm up 
+Troubleshooting:
+    4xx - client errors
+    5xx - server error - backend
+    503 / 502 - capaity or no registered target, backend ssl validation error
+
+Classic Load Balancer:
+Does not support SNI - server side indication
+
+Application Load Balancer:
+
+Network Load Balancer
+Network Load Balancers expose a public static IP, whereas an Application or Classic Load Balancer exposes a static DNS (URL)
+recall that packets from original source are the source ip.
+May need to allow security group with wider range of ips to backend
+
+Cross Zone Load Balancing
+- Essentially allow ELB in AZ-a to talk to backends in AZ-b
+
+
+Connection Draining
+- CLB:
+- Conection Draining: Time to complete in flight requests while the instance is de-rgistering or unhealthy
+- Stops sending new requests to the instance which is de-registering
+
+
+Auto Scaling group
+- Scale in / out 
+- Ensure min / max
+- Auto register new instance to ELB 
+
+Make sure you remember the Default Termination Policy for ASG. It tries to balance across AZ first, and then delete based on the age of the launch configuration.
+
+Cloudwatch alarm - trigger a scaling event 
+
+ASG - Scaling Policies
+- Target Tracking Scaling
+    Low complexity
+    I want ASG CPU to be at 40%
+- Simple Step scaling
+    When cloudwatch alarm is triggered (example > 70% CPU, then add 2 instances)
+- Scheduled Actions
+    Based on known patterns
