@@ -1,2 +1,25 @@
 EC2 Storage
 
+EBS Volume
+Network drive - implies latency
+can be detached from one ec2 to another
+
+
+It is locked to an AZ
+Can move through snapshot
+
+Have a provisioned capacity regardless how much is used.
+Can increase as time goes on
+
+Types:
+    Gp2 : general purpose ssd volume that balances price and perfomance for a wide variety of workloads
+    IO1 : mission critical low latency or high throughput workloads
+    ST1 : Low cost HDD designed for frequently accessed, throughput intensive workloads
+    SC1 : Lowest cost HDD for less frequently accessed workloads
+
+EBS Volumes are characterized in SIZE | Throughput | IOPS | 
+Gp2 and IOI can be used as boot volumes
+Only one ec2 can be attached at any given time
+
+EFS
+- Many Ec2 instances can be attached and share the same storage

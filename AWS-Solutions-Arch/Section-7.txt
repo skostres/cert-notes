@@ -1,0 +1,35 @@
+Route 53 lecture
+
+TTL 
+    - Tradeoff of outdated records vs more traffic to dns
+
+CNAME VS Alias 
+    CNAME points to another domain name
+    Alias: Points to an amazon resource
+Routing Policy
+    - Simple
+        No health Checks
+        Used for single resources
+        Client side load balancing when multiple addresses available
+    - Weighted
+        Distribte traffic based on weights 
+    - Latency
+        Based on user latency to AWS regions. AWS figures this out baed on source ip
+    - Failover 
+        - Health check mandatory
+        - If the health checks fails, will auto failover to secondary 
+
+    - Geolocation
+        This is routing based on user location. France/eu goes to france etc
+
+    - multi value
+        Client side load balacing. Can add health check vs simple routing
+
+Health Checks
+
+Failover 
+
+Geolocation
+
+Multi Value 
+

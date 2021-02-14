@@ -1,0 +1,105 @@
+AWS fundamentals: RDS + Aurora + ElastiCache
+
+AWS Managed DB:
+    Postgres
+    MySQL
+    MariaDB
+    Oracle
+    Microsoft SQL server
+    Aurora (AWS Proprietary database)
+
+Advantages of using AWS Managed:
+ - Provisioning and patching is automated
+ - Point in time restore
+ - Read replicas for read performance
+ - Multi AZ for disaster recovery
+ - Maintenane WIndows for upgrades
+ - Scaling capability
+ - Storage backed 
+
+RDS Backups
+- Backups are automatically enabled in RDS
+- Automated Backups
+    Daily full backup of the database
+    Transaction logs are backed up by RDS every 5 minutes
+    7 day retention up to 35 day retention
+- DB Snapshots
+    Manually triggered by the user
+    retention of backup for as long as desired
+
+
+RDS Read Replicas for read scalability
+    Create up to 5 read replicas
+    within AZ, cross AZ or Cross Region
+    Replication is ASYNC so reads are eventually consistent
+    Can be promoted to their own DB 
+
+Multi AZ
+    SYNC replication to standby instances
+    One DNS name automatic app failover
+    No manual intervention in apps 
+
+Amazon Aurora
+    Not open source
+    Postgres and MySQL are supported as in the existing client drivers will be able to connect 
+    cloud optimized with better performance
+    storage auto grows - 10 GB up to 64 TB
+    Aurora can have 15 replicas vs MySQL has 5
+    replication process is faster at 5ms replica lag
+    Failover is instantaneous HA - Automated failover in 30 seconds
+    There is self healing with peer replication 
+    One master/main writer instance, with up to 15 read replicas
+    Supports cross region replication
+    there is a reader and writer endpoint
+    reader endpoint is load balanced
+    
+
+Features:
+- Automatic failover
+- Backup and recovery
+- isolation and security
+- industry compliance
+- Push button scaling
+- Automated patching with zero downtime
+- advanced monitoring
+- routine maintenance
+- backtrack: restore data to any point of time
+
+Aurora security
+- encryption at restore
+- automated backups, snapshots and replicas are also encrypted
+- 
+
+Aurora serverless
+- automated database instantiation and auto scaling based on actual usage
+- good for infrequent intermittent or unpredictable workloads
+- no capacity planning needed
+- Pay per second can be more cost effective
+
+Global Aurora:
+- Aurora cross region read replicas
+    - useful for disaster recovery 
+    - Simple to put in place
+- Aurora global database (Recommended)
+    - I primary region (read/write)
+    - Up to 5 secondary regions, replication lag is less than 1 second
+    - Up to 16 read replicas per secondary region
+    - Helps for decreasing latency
+    - Promoting another region has an RTO of < 1minute
+
+AWS ElastiCache 
+    - Managed instance of Redis or Memcached
+
+Redis --- think similar to RDS
+- Multi AZ auto failover
+- Read replicas to scale reads and have HA 
+- Data durability using AOF persistence
+- backup and restore features
+
+
+
+Memcached
+- Multi node for partitioning of data (sharding)
+- Non persistent
+- No backup / restore 
+- multi threaded architecture
