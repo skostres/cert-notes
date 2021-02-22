@@ -1,0 +1,81 @@
+S3 MFA Delete
+--------------
+Enable S3 Versioning
+Forces user to generate a code on a device before doing sensitive operations on S3
+Only bucket owner (root account) can enable/disable MFA-Delete 
+MFA Delete can only be enabled through CLI (as of video)
+
+Access Logs to see requests coming to S3
+
+S3 Replication
+Must enable versioning in source and destination
+
+CRR - Compliance, lower latency, replication across accounts
+No chaining of replication
+Copying is async
+SRR: log aggregation, live replication between production and test accounts
+
+Not retroactive
+
+Delete ops:
+    If delete withot a version, delete marker is added and not replicated
+    If delete with version, object is deleted in source bucket, but not replicated
+
+
+presign url cli:
+aws s3 presign s3://<bucket>/file.txt --region eu-west-1 --expires-in 300 
+
+
+Storage classes:
+S3 Standard
+High durability
+High Availability: 99.99% 
+
+S3 IA
+Less available: 99.9%
+Sustain 2 concurrent facility failures
+
+S3 IA - One Zone
+- Availability: 99.5%
+
+
+S3 Intelligent Tiering
+
+
+Amazon Glacier
+Data is retained for longer term
+Meant for backups / archiving
+    Retrieval options 
+        Expedited: 1 to 5 minutes
+        Standard: 3 to 5 hours 
+        Bulk: 5 to 12 hours
+        Minimum storage duration of 90 days
+
+        Amazon Glacier Deep Archive
+            Standard: 12 hours
+            Bulk: 48 hours 
+            Minimum storage duration of 180 days
+
+
+Life Cycle rules:
+    Transition actions: defines when an object should be moved to another storage class
+    Expiration actions: configure objects to expire
+        Can be used to delete old versions of files
+        Can be used to delete incomplete multi part uploads
+     
+
+    
+Source image:
+    Need to be retrievable immediately for 45 days and afterwards, can wait 6 hours
+    Upload in standard S3, move to Glacier standard class after 45 days
+Thumbnail image:
+    Only needs to be kept for 45 days. One zone IA b.c can be recreated with source image
+    Delete rule after 45 days
+
+Scenario:
+    Recover deleted S3 objects immediately for 15 days
+    Recover deleted S3 objects up to 365 days from deletion within 48 hours
+
+
+    Standard S3 with versioning, move to glacier deep archive bulk for deleted objects 
+    After 365 days, permanently delete object 

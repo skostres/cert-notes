@@ -1,0 +1,100 @@
+Security Token Service (STS) 
+    Allows a grant limited and temporary access to AWS resources
+    Token is valid for up to one hour (must be refreshed)
+    AssumeRole
+        - Within your own account: for enhanced security
+        - Cross Account Access: assume role in target account to perform actions there
+    AssumeRoleWithSAML
+        - Return credentials for users logged with SAML 
+    AssumeRoleWithWebIdentity
+        returns creds for users logged with an IdP (facebook Login, Google Login, OIDC compatible)
+        AWS recommends against using this and using Cognito instead
+    GetSessionToken
+        for MFA, from a user or AWS account root user
+    
+
+
+Identity Federation in AWS
+    Federation lets users outside of AWS to assume temporary role for accessing AWS resources
+    These users assume identiy provided access role
+
+    Federations can have many flavors
+        SAML2.0
+        Custom identity broker
+        
+
+    SAML2.0
+        To Integrate Active directory / ADFS with AWS
+        Provides access to AWS console or CLI (through temporary creds)
+        No need to create an IAM user for each of your employees
+
+    
+AWS Directory Services
+    AWS Managed Microsoft AD
+        Create your own AD in AWS, Manage users locally, supports MFA
+        Establish trust with your on premise AD
+    AD Connector
+        Proxy to redirect to on premise AD
+        Users are managed on the on-premise AD
+    
+    Simple AD:
+        AD compatible managed directory on AWS
+        Cannot be joined with on premise AD
+
+    Amazon Cognito user pool
+
+
+Multi account realm
+    AWS Organizations
+        Global service
+        Allows to manage multiple AWS accounts
+        The main account is the master account
+        Other accounts are member accounts
+        Member accounts can only be part of one org
+        
+        Benefit of consolidated billing
+        pricing benefit from aggrgated usage
+        API is aailable to automate AWS account creation
+
+        Multi account stratedgy
+            Create accounts per department, cost center, dev vs test vs prod
+            based on regulatory restrictions, for better isolation, to have separate per account service limits
+            isolated account for logging
+
+        Organization Units
+            Business Unit vs Environment vs Project
+
+
+Service Control Policies (SCP)
+    Whitelist / blacklist IAM actions
+    Applied at the OU or Account level
+    Does not apply to master account
+    SCP is applied to all the users and roles of the account, including root
+    The SCP  
+    
+
+Moving Accounts
+    Remove the member account from the old org
+    Send an invite to the new organization
+    Accept the invite to the new org from the member account
+     
+
+
+IAM Conditions
+    aws:SourceIP
+    aws:RequestedRegion
+    aws:PrincipalTag/Department: "Data"
+
+IAM permission boundaries
+    Set the maximum permissions an IAM entity can get
+
+Resource Access Manager (RAM)
+    Ability to share resources across accounts using shared network. Can reference other account security groups
+    think VPC subnets
+
+
+AWS Single Sign-On (SSO)
+    Centrally manage single sign on to access multiple accounts and 3rd party business applications
+    Integrated with AWS Organizations
+
+    

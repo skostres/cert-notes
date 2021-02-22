@@ -1,0 +1,240 @@
+Choosing the right DB 
+
+RDBMS: SQL/OLTP 
+    - Aurora 
+    - RDS
+
+NoSQL
+    - DynamoDB,
+    - ElastiCache 
+    - Neptune (graph)
+
+Object Store (S3)
+
+Dataware house:
+    Business Intelligence purposes
+
+    Redshift (OLAP)
+    Athena
+
+Search: ElasticSearch. Free text, unstructured searches
+
+Graphs:
+    Neptune
+
+
+
+
+RDS Overiew:
+    Managed: PostgresSQL / MySQL / Oracle / SQL Server
+    Monitoring through CloudWatch
+    Backup / Snapshot / Point in time restore
+    Managed / Scheduled Maintenance
+    Support for read replica and Multi AZ for HA
+    Use Cases:
+        Store relational datasets (RDBMS / OLTP), perform SQL queries
+        transactional inserts / update / delete is available
+
+    5 pillars for well architected:
+        - Operations: 
+            Small downtime when failover happens, when maintenance happens, scaling in read replicas / ec2 instance / restore EBS implies manual intervention, application changes
+        - Security:
+            AWS responsible for OS security. Customer is responsible for setting up KMS, security groups, IAM policies, authorizing users in DB, using SSL
+        - Reliability:
+            Multi AZ feature, failover in case of failures
+        - Performance: 
+            Depends on EC2 instance type, EBS volume type, ability to add read replicas
+        - Cost: Pay per hour based on provisioned EC2 and EBS
+    
+
+Aurora Overview
+    API compatible for PostgresSQL / MySQL
+    Data is held in 6 replicas, across 3 AZ
+    Auto healing capability
+    Multi AZ, Auto scaling read replicas
+    Read Replicas can be Global
+    Aurora database can be global for DR or latency purposes
+    Auto scaling of storage from 10 GB to 64 TB
+    Define EC2 instant type for aurora instances
+    Same security monitoring 
+
+    5 pillars:
+        Operations:
+            Less operations, auto scaling storage
+        Security:
+            AWS responsible for OS security, we are responsible for setting up KMS, SG, IAM policies, authorizing users in DB and using SSL
+        Reliability:
+            Multi AZ, HA, possibly more than RDS, Aurora serverless option
+        Performance: 
+            5x perf due to architectual optimizations. Up to 15 read replicas. (Only 5 for RDS)
+        Cost: 
+            Pay per hour based on EC2 and storage usage. Possibly lower cost compared to Enterprise grade db such as oracle
+
+
+ElastiCache Overview:
+    managed redis / memcached
+    In memory data store, sub ms latency
+    Must provision EC2 instance type
+    Support for clustering (redis), and Multi-AZ, read replicas (sharding)
+    Security through IAM, Security groups, KMS, redis Auth 
+    Backup / Snapshot / point in time restore feature
+    Managed and Scheduled Maintenance
+    Monitoring through C loudWatch
+
+    Use case:
+        Key/value store, Frequent reads, less writes, cache results for DB queries, store session data for websites, cannot use SQL
+
+    5 pillars for well architected:
+        - Operations: 
+            Small downtime when failover happens, when maintenance happens, scaling in read replicas / ec2 instance / restore EBS implies manual intervention, application changes
+        - Security:
+            AWS responsible for OS security. Customer is responsible for setting up KMS, security groups, IAM policies, Redis Auth token, using SSL
+        - Reliability:
+            Clustering, Multi AZ
+        - Performance: 
+            Depends on EC2 instance type, ability to add read replicas for sharding
+        - Cost: 
+            Pay per hour based on provisioned EC2 and EBS
+
+
+DynamoDB Overview:
+    AWS Proprietary technology, managed NoSQL database
+    Serverless, provisioned capacity, auto scaling, on demand capacity
+    an replace ElastiCache as key/value store
+    HA, MultiAZ by default, read and writes are decoupled
+    DAX for read cache
+
+    Reads can be eventually consistent or strongly consistent
+    Security, authentication done through IAM
+
+    DynamoDB streams can integrate with AWS Lambda
+    Backup / Restore feature, global table feature
+    Monitoring through cloudwatch 
+    Can only query on primary key, sort key or indexes
+
+    Use case: 
+        Severless application development, distributed serverless cache, doesnt'y have SQL query language available, has transactions capability
+
+    5 pillars for well architected:
+        - Operations: 
+            No operations needed, auto scaling capability, serverless 
+        - Security:
+            Full security through IAM policies, KMS encryption, SSL in flight
+        - Reliability:
+            Multi AZ, backups
+        - Performance: 
+            Single digit ms performance, DAX for caching reads, performance doesnt degrade if your application scales
+        - Cost: 
+            Pay per provisioned capacity and storage use. Can use autoscaling
+
+S3 Overview
+    key / value storre for objects
+    Great for big objects, not so great for small objects
+
+    Serverless, scales infinitely, max object size is 5 TB
+    Eventual consistency for overwrites and deletes
+
+    Tiers: S3 Standard, S3 IA, S3 One Zone IA, Glacier for backups
+
+    Features: Versioning, encryption, Cross region replication
+    Security: IAM, bucket policies, ACL 
+    Encryption: SS3-S3, SSE-KMS, SSE-C, client side encryption, SSL in transit
+
+    Use cases:
+        static files, key value store for big files, website hosting
+
+
+
+    5 pillars for well architected:
+        - Operations: 
+            No operations needed, auto scaling capability, serverless 
+        - Security:
+            Full security through IAM policies, Bucket policies, ACL, encryption, SSL 
+        - Reliability:
+            Multi AZ, CRR, 99.99 availability, 99.999999999% durability
+        - Performance: 
+            Scales to thousands of read / writes per second, transfer acceleration / multi part for big files
+        - Cost: 
+            Pay per storage usage, network cost, request number
+
+
+Athena Overview (Query engine):
+    Fully serverless database with SQL capabilities
+    use to query data in S3
+    Pay per query
+    Output results back to S3
+    Secured through IAM
+
+    Use case: One time SQL queries, serverless queries on S3, 
+
+
+    5 pillars:
+        Operations: no ops needed, serverless
+        Security: IAM + s3 security
+        Reliability: managed service, uses presto engine, HA
+        performance: queries scale based on data size
+        cost: pay per query / per TB of data scanned serverless
+
+Redshift Overview:
+    Redshift is based on PostgreSQL, but its not used for OLTP
+    It is OLAP - Online analytical processing (analytics / data warehousing / business intelligence)
+    10x better perf than other data warehouses, scale to PBs of data
+    Columnar storage of data instead of row based
+    Massively parellel query execution (MPP), HA
+    Pay as you go based on the instances provisioned
+    Has a SQL interface for performing the queries
+    BI tools such as AWS quicksight or Tableua integrate with it
+
+    Data can be loaded from S3, DynamoDB, DMS, other DBS
+    Scaling: 1 node to 128 nodes, ypu to 160 GB of space per node
+    leader node: for query planning, results aggregation
+    COmpute node: for performing the queries, send results to leader
+    Redshift spectrum: perform queires directly against S3
+    Backup / Restore, Security VPC / IAM / KMS, Monitoring
+    Redshift Enhanced VPC Routing: COPY / UNLOAD 
+
+    Snapshots & DR
+        Are point in time backups of a cluster, stored internally in S3
+        Snapsshots are incremental
+
+    Redshift spectrum:
+        Query data that is already in S3 without loading it
+
+    5 pillars:
+        Operations: similar to RDS
+        Security: IAM, VPC, KMS,SSQL 
+        Reliability: HA, auto healing features
+        performance: 10x perf vs other data warehousing, compression
+        cost: pay per node provisioned, 1/10th the cost of other solutions 
+
+Neptune
+    Fully managed graph database
+    When do we use Graphs
+        High relationship data
+    
+        Use cases: Social Networking
+
+    HA across 3 AZ, with up to 15 read replicas
+    Point in time recovery continous backup to AMazon S3
+    Support for KMS encryption at rest and HTTPS
+
+    5 pillars:
+        Operations: similar to RDS
+        Security: IAM, VPC, KMS,SSQL 
+        Reliability: Multi AZ, clustering
+        performance: best suited for graphs, clustering to improve performance
+        cost: pay per node provisioned 
+
+ElasticSearch
+    Open source technology . Search / Indexing
+
+    Used to search any field even partial matches
+    It is common to use elasticsearch as a complement to another database
+
+    Built in integration: Amazon Kinesis data firehose, AWS IoT, and amazon cloudwatch
+
+    Operations: similar to RDS
+    Security: Cognito, IAM, VPC, KMS, SSL
+    Reliability: Multi AZ, clustering
+    Performance: baed on elastic Search project. petabyte scale
+    Cost: pay per node provisioned

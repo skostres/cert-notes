@@ -1,0 +1,129 @@
+Encryption 101 
+Encryption in flight (SSL / TLS)
+    protect MITM attacks
+
+Server side encryption at rest 
+    Data is encrypted after being received by the server
+    Data is decrypted before being sent
+
+Client side encryption
+    Data is encrypted by the client and never decrypted by the server
+    Data will be decrypted by receiving client
+    The server should not be able to decrypt the data
+    Could leerage Envelope Encryption
+
+
+AWS KMS - key management service
+    Seamless integrated into 
+        EBS
+        S3
+        Redshift
+
+
+    offerings   
+        Symmetric (AES-256 keys)
+            First offering of KMS, single encryotion key that is used to Encrypt and Decrypt
+            AWS Services that are integrated with KMS use Symmetric CMKs
+            Necessary for envelope encryption
+            You never get access to the key unencrypted
+        Asymmetric (RSA & ECC key pairs)
+            Public (Encrypt and Private key Decrypt) 
+            Used for Encrypt / Decrypt or Sign / Verify operations
+            The public key is downloadable, but you can't access the Private key Unencrypted
+            Use case: encryption outside of AWS by users who can't call the KMS API
+    
+    Able to audit the key usage
+    Three types of Customer Master Keys (CMK)
+        AWS Managed Service Default CMK: Free
+        User keys created in KMS 
+        User Keys Imported mut be 256 bit symmetric key
+
+    data > 4KB use envelope encryption
+    KMS keys are region bound
+     
+    KMS Key Policies
+        Control access to KMS keys
+        Default KMS Key Policy
+            Created if you dont provide a specific KMS key policy
+        Custom KMS Key Policy
+            Define users / roles that can access the key
+            Define who can administer the key
+
+    Copying Snapshots across accounts
+        1. Create a Snapshot, encrypted with your own CMK
+        2. Attach a KMS key policy to authorize cross account access
+        3. Share the encrypted snapshot
+        4. Create copy of the snapshot and encrypt it with a KMS key in your account
+        5. Create volume
+
+
+SSM Parameter Store Hierarchy 
+    serverless
+    Secure storage for configurations and secrets
+    version tracking of configuration secrets
+    configuration management using path & IAM
+    notifications with cloudwatch events
+    integration
+
+Secrets Manager:
+    Ability to force rotation of secrets with every X days
+    Integration with Amazon RDS to rotate secrets automatically
+
+
+AWS Shield Standard
+    Activated free 
+    Provide protection from attacks such as SYN/UDP Floods, reflection attacks and ohter layer 3 / 4 attacks 
+
+AWS Shield Advaced
+    Optional DDoS mitigation service (3K per month)
+    Protection against higher fees due to traffic
+
+AWS WAF - Web application firewall
+    Protects your web app from common web exploits at Layer 7 
+    Layer 7 is HTTP 
+    DEPLOY on ALB, API Gateway, Cloudfront
+
+    Define Web ACL 
+        Rule can include IP ADDRESSES, http headers, body URI strings
+        Protects from common attack
+        size constraints, geo-match blacklist countries
+        Rate based rules for ddos protection
+
+
+
+    Resource:
+        Cloudfront distribution
+        ALB / API Gateway
+
+
+
+AWS Shared Responsibility Model
+    AWS responsible for security of the cloud (hardware, software, facilities and networking) that runs all of the AWS services
+
+    Customer responsibility
+        For EC2 - responsible for management of the guest OS, firewall , network config IAM etc
+
+
+    Scenario:
+        RDS
+            AWS Manages the underlying EC2 instance, disable SSH access, automated DB patching, OS patching audit the underlying instance and disks & gurantee function
+
+            Customer:
+                Check the ports / iP / SG 
+                In database user creation and permissions
+                Public access settings 
+                parameter groups / SSL connections
+                database encryption settings
+        
+        S3 
+            AWS: 
+                Gurantee you get unlimted storage
+                Gurantee you get encryption
+                ensure separation of the data between customers
+                ensure employees can't access customer data
+
+            Customer: 
+                Bucket configuration
+                Bucket policy / public setting
+                IAM user and roles
+                enabling encryption

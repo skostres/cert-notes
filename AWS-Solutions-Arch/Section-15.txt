@@ -1,0 +1,188 @@
+Serverless offerings in AWS:
+
+AWS Lambda
+DynamoDB
+AWS Cognito
+API Gateway
+S3
+SNS / SQS 
+Kinesis Data Firehose 
+Aurora Serverless  
+Step functions 
+Fargate
+
+
+Lambda
+    Virtual functions
+    Limited execution time
+    Run on demand
+    Scaling is automated
+    Pay per request and compute time
+    Increasing RAM improves CPU and Network
+
+    Language support:
+        Node.js javascript
+        Python
+        Java
+        C# 
+        Golang
+        C#
+        Ruby 
+        Custom Runtime Api 
+
+    Lambda Integrations:
+        Api Gateway
+        Kinesis
+        DynamoDB
+        S3
+        CloudFront
+        CloudWatch events event bridge
+        CloudWatch Logs
+        SNS
+        SQS
+        Cognito
+
+    Scenario: Thumbnail creation
+        new image object to s3 -> Invoke Lambda -> Push to s3 or DynamoDB
+
+    Serverless CRON job
+        CloudWatch Events EventBride -> Trigger every 1hr -> Lambda
+
+    Cost:
+        Cost per call 
+            .20 per 1 million requests
+        Pay per duration
+            400,000 GB seconds of compute time per month free if
+                400,000 seconds if function is 1 GB RAM
+                3,200,000 seconds if function is 128 MB RAM
+                After that $1.00 for 600,000 GB-seconds
+        It is usually very cheap to run AWS Lambda
+
+    Limits:
+        Maximum execution time: 900 seconds (15 minutes)
+        Memory alloc: 128 MB - 3008 MB (64MB increments)
+        ENV vars: 4 KB 
+        Disk Capacity: 512 MB in /tmp
+        Concurrency executions: 1000
+    
+    Deployments:
+        Lambda function deployment size: compressed.zip: 50 MB
+        Size of uncompressed deployment code (code + dependencies): 250 MB
+
+    Lambda@Edge
+        Four types:
+            Viewer Request (before cloudfront)
+            Origin Request (After cloudfront, before origin/backend)
+            Origin Response (After origin, before cloudfront)
+            Viewer Response (after cloudfront)
+
+        Uses:
+            Website Security and privacy
+            Dynamic Web App at the Edge
+            SEO
+            Intelligently Route Across Origins and Data Centers
+            Bot Mitigation
+            Real time image transformation
+            A/B Testing
+            User Authentication and Authorization
+            user prioritization
+            User tracking and Analytics
+
+DynamoDB
+    Fully Managed, HA with replication across 3 AZ
+    NoSQL Database
+    Scales to massive workloads, distributed database
+    Millions of requests per second, Trillions of row, 100s of TB of storage
+    Integrated with IAM for security, authorization and administration
+
+    Provisioned Throughput:
+        RCU
+            1 RCU = 1 strongly consistent read of 4 KB per second
+            1 RCU = 2 eventually consistent read of 4 KB per second
+
+        WCU:
+            1 WCU = 1 write of 1 KB per second
+        option to setup auto scaling of throughput to meet demand
+        throughput can be exceeded temporarily
+
+
+    DAX = DynamoDB Accelerator
+        Seamless cache for dynamoDB , no application changes needed
+        Writes go through DAX to DynamoDB
+        Micro second latency for cached reads and queries
+        Solves the Hot Key problem
+        5 minutes TTL by default
+
+    DynamoDB Streams
+        Events to stream for create update delete..
+        This stream can be read by a lambda function
+    Transactions
+        All or nothing operations think financial transactions
+    Security:
+        VPC endpoints available to access DynamoDB
+        Access controlled by IAM
+
+    Backup / Restore features
+        Point in time restore like RDS
+    
+    Global Tables:
+        Multi region, fully replicated, high performance
+        For DR purposes, useful for low latency
+        requires dynamoDB streams
+
+    Capacity planning:
+        On demand usage vs provisioned
+
+
+API Gateway:
+    REST API
+    Proxy Requests
+    Support websocket protocol
+    Handle API Versioning
+    Handle different environments 
+    Handle security (auth)
+    Create API keys, handle request throttling
+    Swagger / Open API import to quickly define APIs 
+    Generate SDK and API specifications
+    Cache API responses
+
+
+    Endpoint types:
+        Edge optimized: for global clients. Requests go through cloudfront edge locations to improve latency
+        API Gateway lives in one region
+
+    Regional 
+        For clients within the same region
+
+
+    Private
+        Accessible from VPC using an interface VPC endpoint (ENI)
+        Use a resource policy to define access
+
+    Security
+        IAM permissions
+            Leverages Sig V4 capability where IAM credential are in the headers
+
+        Lambda Authorizer
+            Uses AWS Lambda to alidate the token in header being passed
+            Option to cache result of authentication
+            Helps to use OAuth / SAML / 3rd party type of authentication
+            Lambda must return an IAM policy for the user
+
+        Cognito User Pools
+            Cognito fully manages user lifecycle
+            API gateway verifies identity automatically from AWS Cognito
+            No custom implementations required
+            Cognito only helps with authentication, not authorization
+
+
+Cognito Identity Pools (Federated Identity)
+    Provides AWS Credentials to users so they can access AWS resources directly
+    Integrate with Cognito User Pools as an identiy provider
+
+Cognito sync
+    Synchronize data from device to cognito
+    Deprecated and replaced with AppSync
+
+b
+    

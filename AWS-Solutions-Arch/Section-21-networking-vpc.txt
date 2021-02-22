@@ -1,0 +1,170 @@
+
+
+Subnets:
+    AWS Reserves 5 IPs per subnet which are not host assignable
+
+    The five are: Assume 10.0.0.0/24
+        10.0.0.0 -- Network address
+        10.0.0.1 Reserved by AWS for the VPC router
+        10.0.0.2 Reserved by AWS for mapping to Amazon provided DNS
+        10.0.0.3 Reserved by AWS for future use
+        10.0.0.255 Network Broadcast address. AWS does not support broadcast in a VPC
+
+
+        Need 29 assignable ips to hosts. What is the minimum subnet prefix
+
+            10.0.0.0/24 -> 256 - 5 = 251 assignable
+            /25 -> 128
+            /26 -> 64 - 5 = 58 assignable
+            /27 -> 32 - 5 = 26 assignable 
+            /28 -> 16
+
+            1000 0000
+    NAT instances
+        Need to disable source/destination checks on NAT instance
+        In route table you add a route to a target instance
+
+    NAT Gateway
+        AWS managed NAT, higher bandwidth, availability, no admin
+        Pay by hour for usage and bandwidth
+        Resilient within a single AZ
+
+        Must create mltiple NAT Gateway in Multiple AZ for fault tolerance
+        There is no cross AZ failover b.c if an AZ goes down it doesn't need NAT 
+
+    
+DNS Resolution
+    Private Hosted Zones in Route53 requires VPC to have enableDnsHostnames and enableDnsSupport to be true
+
+Network ACLS vs SG
+    NACL gets evaluated before the SG
+
+    Outbound for SG is stateful. In other words, if the request was allowed by inbound rule, then implied response is allowed.
+    NACL is stateless, so it could get denied still
+
+
+    ephermeral ports 1024 - 65535 
+
+
+VPC Peering
+    Must not overlap subnet CIDR
+    Not transitive. VPC A -> VPC B -> VPC C
+    Must update route tables in each VPCs subnet to ensure instaces can communicate
+    Can do peering with other AWS account (cross account)
+    Can work inter-region, cross account
+    You can reference a security group of a peered VPC
+
+    
+
+VPC Endpoints
+    Used to talk to AWS Managed services within a private network
+    Edit NACL / route table to setup. Not out of the box
+    Scales horizontally and are redundant
+    Removes the need of IGW, NAT etc to access AWS services
+    Interface: 
+        Provisions ENI (Private IP address) as an entry point
+    Gateway: provisions a target and must be used in a route table. S3 and DynamoDB
+
+    Issues:
+        Check DNS setting resolution in VPC
+        Check Route Tables
+
+
+VPC Flow Logs
+    Can send to cloud watch logs or S3 bucket
+
+
+Bastion Hosts
+
+
+Site to Site VPN 
+    VPG
+        VPN concentrator on the AWS side of the VPN connection
+        VGW is ceated and attached to the VPC from which you want to create the site to site VPN connection 
+        Possibility to customize the ASN
+
+    Customer Gateway
+        Software application or physical device on customer side of the VN connection
+        IP Address:
+            Use static, public IP for customer gateway device
+            if behind CGW behind NAT, use public IP instead of NAT
+
+
+Direct connect
+    Provides dedicated private connection from a remote netwrok to your VPC
+    Dedicated Connections: 1 Gbps, 10 Gbps capacity
+    Hosted Connections: 50 Mpbs, 500 Mbps, 10 Gbps
+
+    Lead times are often longer than 1 month to establish connection
+
+    Data in transit is not encrypted, but is private
+    Need to combine AWS Direct Connect + VPN provides an IPsec-encrypted private connection
+    Good for extra level of security, but slightly more complex to put in place
+
+    Direct Connect Gateways:
+        If you want to setup a Direct Connect to one or more VPC n many regions (same account), you must use a direct connect gateway
+
+EGress only internet gateway
+    Works only for IPV6
+    similar function as NAT, but NAT is for ipv4
+    IPV6 are all public addresses
+    IPV6 addresses are internet facing only, but we dont want to expose our systems
+         
+AWS PrivateLink
+    VPC Endpoint Services
+
+    Option 1: make it public
+    Option 2: VPC peering
+    Most secure & scalable way to expose a service to 1000s of VPC (own or other accounts )
+    Does not require VPC peering, internet gateway, NAT, route tables
+    Requires a network load balancer (Service VPC and ENI customer VPC)
+    If the NLB, is in muliple AZ and ENI in MAZ, the solution is fault tolerant
+
+
+AWS ClassicLink
+    Ec2 classic: instances run in a single network shared with other customers
+    Amazon VPC: your instances run logically isolated to your AWS account
+
+    Classic link allows you to link EC2 classic instances to a VPC in your account
+
+VPN CloudHub
+    Provide secure communication between sites, if you have multiple VPN connections
+    Low cost hub-spoke model for primary or secondary network connectivity between locations
+    It is a VPN connection so it goes over the public internet
+
+Transit Gateway
+    A star hub and spoke connection.
+    Regional resource can work cross region
+    Share cross account using resource access manager (RAM)
+    Supports IP Multicast 
+
+
+
+1111 0000
+
+      1111
+
+      1 + 2 + 4 + 8 = 15
+
+
+max CIDR size in AWS is /16
+
+33 addresses, 28 assignable
+
+/28
+    8 + 4 + 2 + 1 = 15
+/27
+    16 + 8 + 4 + 2 + 1 = 31
+/26
+    32 + 31 = 63, 64 - 5 = 59
+
+
+Networking Costs: 
+    Any traffic inbound is free
+    Any traffic between EC2 instances within AZ are free
+    When using an elastic / public IP, will charge .02 per GB
+    .01 if using private IP
+
+    Inter-region: .02 / GB
+    Use Private IP instead of Public IP for good savings and better network perf
+    Use same AZ for maximum savings

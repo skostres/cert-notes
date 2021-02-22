@@ -1,0 +1,74 @@
+ Cloudfront CDN
+ improves read performance, content is cached at the edge
+ 216 Point of presence globally
+ DDoS protection, integration with shield, AWS WAF
+ Can expose external HTTPS and talk to internal HTTPS backends
+
+
+ CloudFront Origins
+    S3 bucket 
+        For dist files and cache them at edge location
+        CloudFrnt origin access identity (OAI)
+        CloudFront can be used as an ingress (to upload files to S3)
+    Custom Origin
+        ELB 
+        EC2 
+        S3 Website
+        Any HTTP backend
+
+Client <-> Edge <-> Origin
+  
+Features:
+    Geo Restriction
+        Whitelist / blacklist
+        Leverages a Geo-IP database
+
+    Cached for a given TTL
+        Perfect for static content
+        Signed URL / Signed Cookies
+            Attach a policy with URL expiration, IP ranges allowed, trusted signers
+            Signed URL for individual files
+            Signed cookie for multiple files
+
+
+
+CloudFront Signed URL vs S3 Pre-signed URL
+    -Cloudfront:
+        Allow access to a path, no matter the origin
+        Account wide key pair
+        Can filter by IP, path, date, expiration
+        Can leverage caching features
+    -S3 pre signed URL
+        issue request as the person who pre signed the URL
+        Uses IAM key of the signing IAM principal
+        Limited Lifetime
+
+
+AWS Global Accelerator
+    Scenario, global geographic user base
+    Unicast IP: one server holds one IP
+    Anycast IP: all servers hold the same IP address and the client is routed to the nearest one
+
+    Uses AWS internal network to route to your application
+
+
+    Works with Elastic IP, EC2 instances, ALB (ELB), NLB, public or private
+    Consistent performance
+        Intelligent routing to lowest latency and fast regional failover
+
+
+Cloudfront vs Global Accelerator
+    Both uses edge locations and global AWS network 
+    Both services leverage AWS shield for DDoS protection
+
+    Cloudfront
+        Improves perf both cacheable content
+        Dynamic content (api acceleration and dynamic site delivery)
+        Content served at the edge
+
+    Global Accelerator
+        Improves perf for a wide range of applications over TCP or UDP
+        Proxying packets at the ede to applications running in one or more AWS regions
+        Good fit for non-http use cases
+        Good for HTTP use cases require static IP addresses
+        Good for HTTP use cases that required deterministic, fast regional failover

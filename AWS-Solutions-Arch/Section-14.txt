@@ -1,0 +1,73 @@
+Amazon SQS 
+
+Standard Queue:
+    Limit of 256 KB per message sent
+    May consume duplicate messages
+    Low Latency (<10ms on publish / receive)
+    Retention default 4 days up to - 14days
+    At least once delivery
+    Best effort ordering
+
+
+
+Message Visibility:
+After a message is polled by a consumer, it becomes invisible to other consumers
+By default: 30 seconds 
+Meaning: 30 seconds to process the message 
+
+Could leverage the ChangeMessageVisibility API to indicate to SQS to give more time
+
+Dead Letter Queue (DLQ)
+    Can set a threshold of how many times a message can go back to the queue 
+    After MaximumReceives threshold is exceeded, the message goes into a dead letter queue (DLQ)
+    Good idea to set maximum retention to give time to review the queue messages
+
+Delay Queue 
+    0 to 15 minutes before consumer can start seeing new message
+
+
+FIFO Queue 
+    First in First Out queue
+    Limit: 300 msg/s without batching, 3000 msg/s with 
+    Exactly once send capability
+    Exactly once processing 
+    Content deduplication: 
+
+
+Kinesis Data Streams 
+    Low latency streaming ingestion at scale
+
+    Producers -> [Shards / partition key] -> consumers
+        Each shard is link a tunnel
+        Data retention 1-7 days
+        ability to reprocess / replay data
+
+    Once data is inserted, it cannot be deleted (until retention)
+    write
+        1 MB/s or 1000 message/s per shard 
+    Read 
+        2 MB/s at read per shard 
+
+    Records are ordered per shard
+    The number of shards can evolve over time
+
+    ProvisionedThroughputException if we go over throughput limits
+
+    KCL uses DynamoDB to checkpoint offsets
+
+
+Kinesis Firehose
+    Load stream into S3, Redshift, ElasticSearch, Splunk
+    Near realltime
+    60 seconds latency minimum for non full batches
+
+Kinesis Data Analytics
+    Perform realtime data analytics on streams using SQL 
+
+
+SQS vs SNS vs Kinesis
+
+Amazon MQ 
+    Used for legacy migration to cloud and avoid rewrite to SQS / SNS for how these applications communicate today
+    It is a managed Apache ActiveMQ
+    Example protocols: JMS, NMS, AMQP, STOMP, MQTT, and WebSocket

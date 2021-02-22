@@ -1,0 +1,119 @@
+RPO: Recovery Point Objective
+    How much data loss is acceptable
+    How often do we make backups
+
+RTO: Recovery Time Objective
+    How much downtime is acceptable in face of disaster?
+
+DR Stratedgies
+    Backup / Restore
+        High RPO
+        Automated Snapshots
+
+
+    Pilot Light
+        A small version of the app is awlays running in the cloud
+        Useful for the critical core
+        Very similiar to backup and restore
+        Faster than backup and restore as critical systems are already up
+    Warm Standby
+        Full system is up and running, but at minimum size
+        Upon disaster, we can scale to production load
+    Hot site / Multi site approach
+        Very low RTO - minutes / seconds - expensive
+        FUll Production Scale is running AWS and On-premise
+
+
+    Backup
+        EBS Snapshots automated
+        regular pushes to S3, lifecycle policies, cross region replication
+
+    HA
+        Route 53 to migrate DNS over from region to region
+        RDS MultiAZ, ElastiCache Multi AZ, EFS, S3
+        Site to Site VPN as a recovery from Direct Connect
+    Replication:
+        RDS replication (cross region), AWS Aurora + Global Databases
+        Database replication from on premise to RDS
+        Storage Gateway
+    Automation: 
+        CloudFormation / Beanstalk to recreate a whole new environment
+        Recover / Reboot EC2 instances with CloudWatch if alarms fail
+        AWS Lambda functions for customized automations
+    Chaos: 
+        Netflix randomly stopping EC2 in production
+
+
+Database Migration Service (DMS)
+    Quickly and securely migrate databases to AWS, resilient self healing
+    Source databse remains availalble during the migration
+    Supports:
+        Homogeneous migrations
+        Heterogeneous: oracle -> postgres
+    Continuous Data Replication using CDC
+    You must create an EC2 instance to perform the replication tasks
+
+
+    AWS Schema Conversion TOOL (SCT)
+        Convert your database schema from one engine to another
+
+
+AWS Server Migration Service (SMS) 
+    Incremental replication of on-premise live servers to AWS 
+
+AWS Application Discovery Service
+    Gather info on onpremise servers to plan a migration
+    Server utilization and dependency mappings
+    track AWS Migration Hub
+
+AWS DataSync
+    Move Large amount of data from on premise to AWS
+    Can synchronize to Amazon S3, Amazon EFS, Amazon FSx for windows
+    Move data from your NAS or file system via NFS or SMB
+    Two way data movement
+
+
+Transfer data to AWS
+    200 TB of data in the loud. We have 100 Mbps internet Connections
+
+    100 Mbps internet
+        Over internet / Site to Site VPN
+            200 TB x 1000 GB x 1000 MB * 8(to bit) / 100 Mbps = 16,000,000s = 185 days
+
+    Over direct connect 1 Gbps
+    
+    Over Snowball
+        Will take 2 to 3 snowballs in parallel. Takes about 1 week for the end to end transfer
+
+
+EC2 Enhanced Networking (SR-IOV)
+    Higher bandwidth, higher PPS, lower latency
+    Option 1: Elastic Network Adapter (ENA) up to 100 Gbps
+    Option 2: Intel 82599 VF up to 10 Gbps -- legacy
+
+Elastic Fabric Adapter (EFA)
+    Improved ENA for HPC, only works for Linux
+    Greate for inter-node communications, tightly coupled workloads
+    Leverages Message Passing interface (MPI)
+    Bypass Linux OS to provide low latency reliable transport
+    
+Storage: 
+    Instance attached
+        EBS: scale up to 64000 IOPS 
+        Instance Store: scale to millions of IOPS, low latency
+
+    Network storage
+        S3
+        EFS
+        Amazon FSx for lustre
+            HPC optimized millions of IOPS
+            Backed by S3
+
+
+Automation and Orchestration
+    AWS Batch
+        support multi node parallel jobs, which enables you to run single jobs that span multiple EC2 instances
+        Easily schedule jobs and launch EC2 instances accordingly
+
+    AWS ParallelCluster
+        

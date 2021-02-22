@@ -1,0 +1,36 @@
+AWS Storage extras
+
+
+Snowball / AWS Snowmobile
+    Physically transfer data to/from AWS 
+    Imports into S3, use lifecycle policy to migrate to glaccier storage class
+
+Storage Gateway bridges Block, File, and Object storage solutions
+Use cases: disaster recovery, backup, & restore, tiered storage
+
+Files, Volumes, Tapes
+    File Gateway:
+        S3 buckets are accessible using the NFS and SMB protocol
+        Can be mounted as a NFS for on prem servers
+    Volume Gateway
+        Block storage using iSCSI protocol backed by S3
+        Backed by EBS snapshots which can help restore on premise volumes
+        Cached volumes: low latency access to most recent data
+        Stored volumes: entire dataset is on premise scheduled backups to S3
+
+    Tape Gateway
+        VTL Tape solution / backup with iSCSI -> Tape Gateway
+
+Amazon FSx for windows (file server)
+    EFS is a shared POSIX system for Linux Systems
+
+Amazon FSx for lustre
+    Lustre is a type of parallel distributed file system for large scale computing
+    Machine learning high perf comuting
+    Video processing, Financial modeling, electronic design automation
+    scales up to 100s GB/s millions of IOPS sub ms latencies
+    Seamless integration with S3
+    Can read S3 as a file system through FSx
+    Can write the output of the computations back to S3
+    Can be used from on premise servers
+
